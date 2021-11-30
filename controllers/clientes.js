@@ -11,9 +11,9 @@ const postCliente = async(req=request, res=response) => {
     // verificamos que el cliente no exista en la base de datos
     const existeCliente = await Cliente.findOne( {dpi: body.dpi} );
     if(existeCliente){
-      return res.status(400).json{
+      return res.status(400).json({
         msg: `El cliente ${existeCliente.nombre} ya existe en la base de datos`
-      }
+      })
     }
 
     // si el cliente no existe lo guardamos en la base de datos
