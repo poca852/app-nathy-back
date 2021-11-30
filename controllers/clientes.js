@@ -2,15 +2,26 @@ const { request, response } = require("express");
 const Cliente = require("../models/cliente");
 
 const postCliente = async(req=request, res=response) => {
+
+  // extraemos lo que viene en el body
+  const { body } = req;
+
   try{
 
-    const {body} = req;
+    // verificamos que el cliente no exista en la base de datos
+    const existeCliente = await Cliente.findOne( {dpi: body.dpi} );
+    if(existeCliente){
+      return res.status(400).json{
+        msg: `El cliente ${existeCliente.nombre} ya existe en la base de datos`
+      }
+    }
+
+    // si el cliente no existe lo guardamos en la base de datos
     const cliente = new Cliente(body);
     await cliente.save();
 
-    res.json({
-      ok: true,
-      cliente
+    res.status(201).json({
+      ok: true
     })
 
   }catch(error){
@@ -22,8 +33,9 @@ const postCliente = async(req=request, res=response) => {
 }
 
 const getClientes = async(req=request, res=response) => {
+
+  // condicionamos el query, segun lo que me mande el front
   const { estado= 'true' } = req.query;
-  
   let query
   if(estado === 'true'){
     query = true;
@@ -32,14 +44,16 @@ const getClientes = async(req=request, res=response) => {
   }
 
   const clientes = await Cliente.find({estado: query});
-  res.json(clientes)
+
+  res.status(200).json(clientes)
 }
 
 const getCliente = async(req=request, res=response) => {
-  const {id} =req.params;
+
+  const { id } =req.params;
   const cliente = await Cliente.findById(id);
 
-  res.json(cliente)
+  res.status(200).json(cliente)
 }
 
 module.exports = {
