@@ -40,13 +40,13 @@ const postUsuarios = async(req=request, res=response) => {
 
 const getUsuarios = async(req, res) => {
 
+  const {q} = req.query;
+
   try {
 
-    const usuarios = await Usuario.find()
+    const usuario = await Usuario.findOne({usuario: q})
 
-    res.status(200).json({
-      usuarios
-    })
+    res.status(200).json(usuario)
 
 
   } catch (error) {
